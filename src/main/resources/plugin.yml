@@ -1,0 +1,42 @@
+name: ChestShopRestrictions
+description: Set restrictions on your chest shops.
+author: Kohle
+version: ${project.version} (build ${build.number})
+
+main: co.kohle.ChestShopRestrictions.ChestShopRestrictions
+depend: [ChestShop]
+softdepend: [Vault]
+api-version: '1.21'
+
+commands:
+  chestshoprestrictions:
+    description: View ChestShopRestrictions information.
+    usage: /<command> [reload | limits]
+    aliases: [csr, csq]
+    permission: chestshoprestrictions.info
+
+permissions:
+  chestshoprestrictions.info:
+    description: Allows viewing ChestShopRestrictions info.
+    default: op
+  chestshoprestrictions.reload:
+    description: Allows reloading the ChestShopRestrictions configuration.
+    default: op
+  chestshoprestrictions.showlimits:
+    description: Allows viewing the current ChestShopRestrictions limits.
+    default: true
+  chestshoprestrictions.min.sell.bypass:
+    description: Bypasses the minimum sell price restriction when creating a ChestShop.
+    default: false
+  chestshoprestrictions.min.buy.bypass:
+    description: Bypasses the minimum buy price restriction when creating a ChestShop.
+    default: false
+  chestshoprestrictions.wholenumber.bypass:
+    description: Bypasses the whole-number-only price restriction when creating a ChestShop.
+    default: false
+  chestshoprestrictions.maxshops.(quantity):
+    description: Maximum number of shops a player can create.
+    default: false
+  chestshoprestrictions.maxshops.bypass:
+    description: Bypasses the maximum shop count restriction.
+    default: op

@@ -1,0 +1,50 @@
+# ChestShopRestrictions Configuration
+# This plugin adds restrictions to ChestShop, such as minimum price limits and maximum shop limits.
+
+# Minimum global prices for buying and selling items.
+# This will OVERRIDE any settings in the ChestShop priceLimits.yml file.
+# Set to 0 to disable minimum price limits.
+minimum-prices:
+  buy: 1
+  sell: 1
+
+# Require whole numbers for prices (no decimals).
+whole-numbers-only: true
+
+# Enable or disable the maximum shop limit feature.
+# When enabled, players are limited by the chestshoprestrictions.maxshops.<number> permission.
+max-shops-enabled: false
+
+# Messages sent to players (MiniMessage format).
+# Use tags like <red>, <bold>, <gradient:red:blue>, etc.
+# Set a message to "" to disable it.
+messages:
+
+  # Error messages shown when a player tries to create a shop with a price below the minimum.
+  # Available placeholders:
+  #   <price>     - the minimum price value
+  #   <currency>  - the currency name (auto singular/plural via Vault)
+  minimum-prices:
+    buy: "<red>The minimum price for selling items is <price> <currency>."
+    sell: "<red>The minimum price for buying items is <price> <currency>."
+
+  # Error message shown when a player tries to create a shop with a non-whole number price.
+  whole-numbers-only: "<red>The price must be a whole number."
+
+  # Error message shown when a player has reached their maximum number of shops.
+  # Available placeholders:
+  #   <max> - the player's max shop limit
+  max-shops: "<red>You have reached the maximum number of shops (<max>)."
+
+  # Limits message shown with /csq limits.
+  # Available placeholders:
+  #   <min_buy>        - minimum buy price
+  #   <min_sell>       - minimum sell price
+  #   <currency_buy>   - currency name for the buy amount
+  #   <currency_sell>  - currency name for the sell amount
+  #   <whole_numbers>  - "Yes" or "No"
+  limits: |
+    <gold>Limits for chest shops:
+    <yellow>Minimum for selling items: <min_buy> <currency_buy>
+    <yellow>Minimum for buying items: <min_sell> <currency_sell>
+    <yellow>Whole numbers only: <whole_numbers>
