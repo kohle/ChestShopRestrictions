@@ -6,7 +6,7 @@
 
     <groupId>co.kohle</groupId>
     <artifactId>ChestShopRestrictions</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
 
     <name>ChestShopRestrictions</name>
     <description>An addon for ChestShop that introduces restrictions for your player shops.</description>
@@ -71,6 +71,22 @@
             <version>3.2.1</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- HikariCP Connection Pool -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- SQLite JDBC Driver -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.45.1.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -103,7 +119,11 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>co.kohle.ChestShopRestrictions</shadedPattern>
+                            <shadedPattern>co.kohle.ChestShopRestrictions.lib.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>co.kohle.ChestShopRestrictions.lib.hikari</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

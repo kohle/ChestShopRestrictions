@@ -25,6 +25,9 @@ permissions:
   chestshoprestrictions.showlimits:
     description: Allows viewing the current ChestShopRestrictions limits.
     default: true
+  chestshoprestrictions.count:
+    description: Allows viewing the shop count for yourself or other players.
+    default: op
   chestshoprestrictions.min.sell.bypass:
     description: Bypasses the minimum sell price restriction when creating a ChestShop.
     default: false

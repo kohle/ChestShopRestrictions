@@ -1,6 +1,27 @@
 # ChestShopRestrictions Configuration
 # This plugin adds restrictions to ChestShop, such as minimum price limits and maximum shop limits.
 
+# Database configuration for shop tracking.
+# Supported types: sqlite, mysql
+database:
+  type: sqlite
+
+  # Table prefix for database tables
+  table-prefix: csr_
+
+  # SQLite configuration (used when type is "sqlite")
+  sqlite:
+    file: shops.db
+
+  # MySQL configuration (used when type is "mysql")
+  mysql:
+    host: localhost
+    port: 3306
+    database: minecraft
+    username: root
+    password: ""
+    use-ssl: false
+
 # Minimum global prices for buying and selling items.
 # This will OVERRIDE any settings in the ChestShop priceLimits.yml file.
 # Set to 0 to disable minimum price limits.
@@ -14,6 +35,11 @@ whole-numbers-only: true
 # Enable or disable the maximum shop limit feature.
 # When enabled, players are limited by the chestshoprestrictions.maxshops.<number> permission.
 max-shops-enabled: false
+
+# Block transactions at shops owned by players who are over their shop limit.
+# When enabled, buyers will be notified and the transaction will be cancelled.
+# The shop owner will also be notified when they log in.
+block-transactions-over-limit: false
 
 # Messages sent to players (MiniMessage format).
 # Use tags like <red>, <bold>, <gradient:red:blue>, etc.
@@ -35,6 +61,22 @@ messages:
   # Available placeholders:
   #   <max> - the player's max shop limit
   max-shops: "<red>You have reached the maximum number of shops (<max>)."
+
+  # Message shown with /csr count [player].
+  # Available placeholders:
+  #   <player> - the target player's name
+  #   <count>  - current shop count
+  #   <max>    - max shop limit (or ∞ if unlimited)
+  count: "<gold><player>'s shop count: <yellow><count>/<max>"
+
+  # Message shown to buyers when a transaction is blocked because the shop owner is over their limit.
+  transaction-blocked: "<red>This shop is currently disabled because the owner has too many shops."
+
+  # Message shown to shop owners when they log in and are over their shop limit.
+  # Available placeholders:
+  #   <count> - current shop count
+  #   <max>   - max shop limit
+  over-limit-login: "<red>You have <count> shops but are only allowed <max>. Your shops are disabled until you remove some."
 
   # Limits message shown with /csq limits.
   # Available placeholders:

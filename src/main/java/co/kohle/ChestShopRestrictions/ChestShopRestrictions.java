@@ -9,9 +9,11 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import co.kohle.ChestShopRestrictions.Commands.ChestShopRestrictionsCommand;
+import co.kohle.ChestShopRestrictions.Listeners.PlayerJoinListener;
 import co.kohle.ChestShopRestrictions.Listeners.PreShopCreationEventListener;
 import co.kohle.ChestShopRestrictions.Listeners.ShopCreatedEventListener;
 import co.kohle.ChestShopRestrictions.Listeners.ShopDestroyedEventListener;
+import co.kohle.ChestShopRestrictions.Listeners.TransactionEventListener;
 import co.kohle.ChestShopRestrictions.Storage.ShopTracker;
 
 import java.math.BigDecimal;
@@ -31,17 +33,21 @@ public final class ChestShopRestrictions extends JavaPlugin {
     private BigDecimal minSell;
     private boolean wholeNumbersOnly;
     private boolean maxShopsEnabled;
+    private boolean blockTransactionsOverLimit;
 
     private String msgMinBuy;
     private String msgMinSell;
     private String msgWholeNumbersOnly;
     private String msgMaxShops;
+    private String msgCount;
+    private String msgTransactionBlocked;
+    private String msgOverLimitLogin;
     private String msgLimits;
 
     @Override
     public void onEnable() {
         // Save default config if not present, then load settings
-        getLogger().info("Loading configuration and data file...");
+        getLogger().info("Loading configuration...");
 
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
@@ -49,7 +55,14 @@ public final class ChestShopRestrictions extends JavaPlugin {
         setupEconomy();
         loadSettings();
 
+        // Initialize database
+        getLogger().info("Initializing database...");
         shopTracker = new ShopTracker(this);
+        if (!shopTracker.initialize()) {
+            getLogger().severe("Failed to initialize database! Disabling plugin.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Register events and listeners
         getLogger().info("Registering events...");
@@ -57,6 +70,8 @@ public final class ChestShopRestrictions extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PreShopCreationEventListener(this), this);
         getServer().getPluginManager().registerEvents(new ShopCreatedEventListener(this), this);
         getServer().getPluginManager().registerEvents(new ShopDestroyedEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new TransactionEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 
         // Register commands
         getLogger().info("Registering commands...");
@@ -82,7 +97,21 @@ public final class ChestShopRestrictions extends JavaPlugin {
             return getConfig().getBoolean("max-shops-enabled", false) ? "Yes" : "No";
         }));
 
+        metrics.addCustomChart(new SimplePie("databaseType", () -> {
+            return getConfig().getString("database.type", "sqlite");
+        }));
+
         getLogger().info("ChestShopRestrictions enabled!");
+    }
+
+    @Override
+    public void onDisable() {
+        // Shutdown database connection pool
+        if (shopTracker != null) {
+            getLogger().info("Closing database connection...");
+            shopTracker.shutdown();
+        }
+        getLogger().info("ChestShopRestrictions disabled.");
     }
 
     /**
@@ -107,6 +136,7 @@ public final class ChestShopRestrictions extends JavaPlugin {
         minSell = readDecimal("minimum-prices.sell", "1");
         wholeNumbersOnly = getConfig().getBoolean("whole-numbers-only", true);
         maxShopsEnabled = getConfig().getBoolean("max-shops-enabled", false);
+        blockTransactionsOverLimit = getConfig().getBoolean("block-transactions-over-limit", false);
 
         msgMinBuy = getConfig().getString(
                 "messages.minimum-prices.buy",
@@ -126,6 +156,21 @@ public final class ChestShopRestrictions extends JavaPlugin {
         msgMaxShops = getConfig().getString(
                 "messages.max-shops",
                 "<red>You can only create up to <max> shops."
+        );
+
+        msgCount = getConfig().getString(
+                "messages.count",
+                "<gold><player>'s shop count: <yellow><count>/<max>"
+        );
+
+        msgTransactionBlocked = getConfig().getString(
+                "messages.transaction-blocked",
+                "<red>This shop is currently disabled because the owner has too many shops."
+        );
+
+        msgOverLimitLogin = getConfig().getString(
+                "messages.over-limit-login",
+                "<red>You have <count> shops but are only allowed <max>. Your shops are disabled until you remove some."
         );
 
         msgLimits = getConfig().getString(
@@ -184,14 +229,30 @@ public final class ChestShopRestrictions extends JavaPlugin {
     public BigDecimal getMinSell() { return minSell; }
     public boolean isWholeNumbersOnly() { return wholeNumbersOnly; }
     public boolean isMaxShopsEnabled() { return maxShopsEnabled; }
+    public boolean isBlockTransactionsOverLimit() { return blockTransactionsOverLimit; }
 
     public String getMsgMinBuy() { return msgMinBuy; }
     public String getMsgMinSell() { return msgMinSell; }
     public String getMsgWholeNumbersOnly() { return msgWholeNumbersOnly; }
     public String getMsgMaxShops() { return msgMaxShops; }
     public String getMsgLimits() { return msgLimits; }
+    public String getMsgTransactionBlocked() { return msgTransactionBlocked; }
 
     public ShopTracker getShopTracker() { return shopTracker; }
+
+    /**
+     * Formats the over-limit login message, replacing placeholders.
+     *
+     * @param count current shop count
+     * @param max   max allowed shops
+     */
+    public Component formatOverLimitLoginMessage(int count, int max) {
+        if (msgOverLimitLogin == null || msgOverLimitLogin.isEmpty()) return Component.empty();
+        String replaced = msgOverLimitLogin
+                .replace("<count>", String.valueOf(count))
+                .replace("<max>", String.valueOf(max));
+        return MINI_MESSAGE.deserialize(replaced);
+    }
 
     /**
      * Formats the max-shops message, replacing {@code <max>} with the limit.
@@ -199,6 +260,22 @@ public final class ChestShopRestrictions extends JavaPlugin {
     public Component formatMaxShopsMessage(int max) {
         if (msgMaxShops == null || msgMaxShops.isEmpty()) return Component.empty();
         String replaced = msgMaxShops.replace("<max>", String.valueOf(max));
+        return MINI_MESSAGE.deserialize(replaced);
+    }
+
+    /**
+     * Formats the count message, replacing placeholders with player info.
+     *
+     * @param playerName the target player's name
+     * @param count      the current shop count
+     * @param max        the max shop limit (or "∞" if unlimited)
+     */
+    public Component formatCountMessage(String playerName, int count, String max) {
+        if (msgCount == null || msgCount.isEmpty()) return Component.empty();
+        String replaced = msgCount
+                .replace("<player>", playerName)
+                .replace("<count>", String.valueOf(count))
+                .replace("<max>", max);
         return MINI_MESSAGE.deserialize(replaced);
     }
 

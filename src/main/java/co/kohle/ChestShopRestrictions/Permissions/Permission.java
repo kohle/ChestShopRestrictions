@@ -11,6 +11,7 @@ public enum Permission {
     INFO("chestshoprestrictions.info"),
     RELOAD("chestshoprestrictions.reload"),
     SHOW_LIMITS("chestshoprestrictions.showlimits"),
+    COUNT("chestshoprestrictions.count"),
     MIN_SELL_BYPASS("chestshoprestrictions.min.sell.bypass"),
     MIN_BUY_BYPASS("chestshoprestrictions.min.buy.bypass"),
     WHOLE_NUMBER_BYPASS("chestshoprestrictions.wholenumber.bypass"),
