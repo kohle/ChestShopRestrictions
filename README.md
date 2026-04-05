@@ -1,5 +1,6 @@
 # ChestShopRestrictions
 ![ChestShopRestrictions latest release version](https://img.shields.io/github/v/release/kohle/ChestShopRestrictions)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/kohle/ChestShopRestrictions/ci.yml)
 ![ChestShopRestrictions latest release downloads](https://img.shields.io/github/downloads/kohle/ChestShopRestrictions/latest/total)
 ![ChestShopRestrictions total downloads](https://img.shields.io/github/downloads/kohle/ChestShopRestrictions/total)
 ![ChestShopRestrictions license](https://img.shields.io/github/license/kohle/ChestShopRestrictions)
@@ -15,8 +16,8 @@ View the [ChestShopRestrictions wiki](https://github.com/kohle/ChestShopRestrict
 - Configurable player messages using [MiniMessage format](https://docs.papermc.io/adventure/minimessage/) and placeholders.
 
 ### Configuration and Storage
-* The plugin configuration is stored in `/plugins/ChestShopRestrictions/config.yml`.
-* The player's chest shop count is stored in `/plugins/ChestShopRestrictions/data.yml`.
+* The plugin configuration is located at `/plugins/ChestShopRestrictions/config.yml`.
+* Player shop counts and locations are tracked with SQLite (default) or MySQL.
 
 ### Compatibility
 * Requires [ChestShop](https://github.com/ChestShop-authors/ChestShop-3) by Phoenix616.
