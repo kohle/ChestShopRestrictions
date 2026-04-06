@@ -22,12 +22,20 @@ database:
     password: ""
     use-ssl: false
 
-# Minimum global prices for buying and selling items.
+# Minimum global prices for chest shops.
+# These follow ChestShop's sign format (customer perspective):
+#   buy  = the B price on the sign (what a customer pays to buy from the shop)
+#   sell = the S price on the sign (what a customer receives when selling to the shop)
 # This will OVERRIDE any settings in the ChestShop priceLimits.yml file.
 # Set to 0 to disable minimum price limits.
 minimum-prices:
   buy: 1
   sell: 1
+
+# Allow shops with a "free" price (0).
+# When true, shops set to "free" will skip the minimum-price check.
+# When false, free shops are treated as price 0 and rejected if the minimum is > 0.
+allow-free-shops: true
 
 # Require whole numbers for prices (no decimals).
 whole-numbers-only: true
@@ -51,8 +59,8 @@ messages:
   #   <price>     - the minimum price value
   #   <currency>  - the currency name (auto singular/plural via Vault)
   minimum-prices:
-    buy: "<red>The minimum price for selling items is <price> <currency>."
-    sell: "<red>The minimum price for buying items is <price> <currency>."
+    buy: "<red>The minimum buy (B) price is <price> <currency>."
+    sell: "<red>The minimum sell (S) price is <price> <currency>."
 
   # Error message shown when a player tries to create a shop with a non-whole number price.
   whole-numbers-only: "<red>The price must be a whole number."
@@ -85,8 +93,8 @@ messages:
   #   <currency_buy>   - currency name for the buy amount
   #   <currency_sell>  - currency name for the sell amount
   #   <whole_numbers>  - "Yes" or "No"
-  limits: |
+  limits:
     <gold>Limits for chest shops:
-    <yellow>Minimum for selling items: <min_buy> <currency_buy>
-    <yellow>Minimum for buying items: <min_sell> <currency_sell>
+    <yellow>Minimum buy (B) price: <min_buy> <currency_buy>
+    <yellow>Minimum sell (S) price: <min_sell> <currency_sell>
     <yellow>Whole numbers only: <whole_numbers>

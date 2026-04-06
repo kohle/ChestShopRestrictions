@@ -34,6 +34,7 @@ public final class ChestShopRestrictions extends JavaPlugin {
     private boolean wholeNumbersOnly;
     private boolean maxShopsEnabled;
     private boolean blockTransactionsOverLimit;
+    private boolean allowFreeShops;
 
     private String msgMinBuy;
     private String msgMinSell;
@@ -137,15 +138,16 @@ public final class ChestShopRestrictions extends JavaPlugin {
         wholeNumbersOnly = getConfig().getBoolean("whole-numbers-only", true);
         maxShopsEnabled = getConfig().getBoolean("max-shops-enabled", false);
         blockTransactionsOverLimit = getConfig().getBoolean("block-transactions-over-limit", false);
+        allowFreeShops = getConfig().getBoolean("allow-free-shops", true);
 
         msgMinBuy = getConfig().getString(
                 "messages.minimum-prices.buy",
-                "<red>The minimum price for selling items is <price> <currency>."
+                "<red>The minimum buy (B) price is <price> <currency>."
         );
 
         msgMinSell = getConfig().getString(
                 "messages.minimum-prices.sell",
-                "<red>The minimum price for buying items is <price> <currency>."
+                "<red>The minimum sell (S) price is <price> <currency>."
         );
 
         msgWholeNumbersOnly = getConfig().getString(
@@ -175,7 +177,7 @@ public final class ChestShopRestrictions extends JavaPlugin {
 
         msgLimits = getConfig().getString(
                 "messages.limits",
-                "<gold>ChestShopRestrictions Limits:\n<yellow>Min Buy Price: <min_buy> <currency_buy>\n<yellow>Min Sell Price: <min_sell> <currency_sell>\n<yellow>Whole Numbers Only: <whole_numbers>"
+                "<gold>ChestShopRestrictions Limits:\n<yellow>Min Buy (B) Price: <min_buy> <currency_buy>\n<yellow>Min Sell (S) Price: <min_sell> <currency_sell>\n<yellow>Whole Numbers Only: <whole_numbers>"
         );
 
         getLogger().info("Min buy: " + minBuy + ", min sell: " + minSell +
@@ -230,6 +232,7 @@ public final class ChestShopRestrictions extends JavaPlugin {
     public boolean isWholeNumbersOnly() { return wholeNumbersOnly; }
     public boolean isMaxShopsEnabled() { return maxShopsEnabled; }
     public boolean isBlockTransactionsOverLimit() { return blockTransactionsOverLimit; }
+    public boolean isAllowFreeShops() { return allowFreeShops; }
 
     public String getMsgMinBuy() { return msgMinBuy; }
     public String getMsgMinSell() { return msgMinSell; }
