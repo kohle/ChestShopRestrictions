@@ -1,0 +1,49 @@
+# ChestShopRestrictions English Language File
+# MiniMessage format — use tags like <red>, <bold>, <gradient:red:blue>, etc.
+# Set a message to "" to disable it.
+
+# Error messages shown when a player tries to create a shop with a price below the minimum.
+# Available placeholders:
+#   <price>     - the minimum price value
+#   <currency>  - the currency name (auto singular/plural via Vault)
+minimum-prices:
+  buy: "<red>The minimum buy (B) price is <price> <currency>."
+  sell: "<red>The minimum sell (S) price is <price> <currency>."
+
+# Error message shown when a player tries to create a shop with a non-whole number price.
+whole-numbers-only: "<red>The price must be a whole number."
+
+# Error message shown when a player has reached their maximum number of shops.
+# Available placeholders:
+#   <max> - the player's max shop limit
+max-shops: "<red>You have reached the maximum number of shops (<max>)."
+
+# Message shown with /csr count [player].
+# Available placeholders:
+#   <player> - the target player's name
+#   <count>  - current shop count
+#   <max>    - max shop limit (or ∞ if unlimited)
+count: "<gold><player>'s shop count: <yellow><count>/<max>"
+
+# Message shown to buyers when a transaction is blocked because the shop owner is over their limit.
+transaction-blocked: "<red>This shop is currently disabled because the owner has too many shops."
+
+# Message shown to shop owners when they log in and are over their shop limit.
+# Available placeholders:
+#   <count> - current shop count
+#   <max>   - max shop limit
+over-limit-login: "<red>You have <count> shops but are only allowed <max>. Your shops are disabled until you remove some."
+
+# Limits message shown with /csr limits.
+# Available placeholders:
+#   <min_buy>        - minimum buy price
+#   <min_sell>       - minimum sell price
+#   <currency_buy>   - currency name for the buy amount
+#   <currency_sell>  - currency name for the sell amount
+#   <whole_numbers>  - "Yes" or "No"
+limits: |-
+  <gold>Limits for chest shops:
+  <yellow>Minimum buy (B) price: <min_buy> <currency_buy>
+  <yellow>Minimum sell (S) price: <min_sell> <currency_sell>
+  <yellow>Whole numbers only: <whole_numbers>
+

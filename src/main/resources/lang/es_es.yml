@@ -1,0 +1,49 @@
+# ChestShopRestrictions Archivo de Idioma Español
+# Formato MiniMessage — usa etiquetas como <red>, <bold>, <gradient:red:blue>, etc.
+# Establece un mensaje a "" para desactivarlo.
+
+# Mensajes de error mostrados cuando un jugador intenta crear una tienda con un precio inferior al mínimo.
+# Marcadores disponibles:
+#   <price>     - el valor del precio mínimo
+#   <currency>  - el nombre de la moneda (singular/plural automático vía Vault)
+minimum-prices:
+  buy: "<red>El precio mínimo de compra (B) es <price> <currency>."
+  sell: "<red>El precio mínimo de venta (S) es <price> <currency>."
+
+# Mensaje de error mostrado cuando un jugador intenta crear una tienda con un precio que no es un número entero.
+whole-numbers-only: "<red>El precio debe ser un número entero."
+
+# Mensaje de error mostrado cuando un jugador ha alcanzado su número máximo de tiendas.
+# Marcadores disponibles:
+#   <max> - el límite máximo de tiendas del jugador
+max-shops: "<red>Has alcanzado el número máximo de tiendas (<max>)."
+
+# Mensaje mostrado con /csr count [jugador].
+# Marcadores disponibles:
+#   <player> - el nombre del jugador objetivo
+#   <count>  - cantidad actual de tiendas
+#   <max>    - límite máximo de tiendas (o ∞ si es ilimitado)
+count: "<gold>Tiendas de <player>: <yellow><count>/<max>"
+
+# Mensaje mostrado a compradores cuando una transacción es bloqueada porque el dueño de la tienda excede su límite.
+transaction-blocked: "<red>Esta tienda está desactivada porque el dueño tiene demasiadas tiendas."
+
+# Mensaje mostrado a los dueños de tiendas cuando inician sesión y exceden su límite de tiendas.
+# Marcadores disponibles:
+#   <count> - cantidad actual de tiendas
+#   <max>   - límite máximo de tiendas
+over-limit-login: "<red>Tienes <count> tiendas pero solo se te permiten <max>. Tus tiendas están desactivadas hasta que elimines algunas."
+
+# Mensaje de límites mostrado con /csr limits.
+# Marcadores disponibles:
+#   <min_buy>        - precio mínimo de compra
+#   <min_sell>       - precio mínimo de venta
+#   <currency_buy>   - nombre de la moneda para el precio de compra
+#   <currency_sell>  - nombre de la moneda para el precio de venta
+#   <whole_numbers>  - "Sí" o "No"
+limits: |-
+  <gold>Límites para tiendas:
+  <yellow>Precio mínimo de compra (B): <min_buy> <currency_buy>
+  <yellow>Precio mínimo de venta (S): <min_sell> <currency_sell>
+  <yellow>Solo números enteros: <whole_numbers>
+

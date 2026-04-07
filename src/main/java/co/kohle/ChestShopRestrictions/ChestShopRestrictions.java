@@ -28,6 +28,9 @@ public final class ChestShopRestrictions extends JavaPlugin {
     // Shop count tracker
     private ShopTracker shopTracker;
 
+    // Language manager
+    private Lang lang;
+
     // Configuration values
     private BigDecimal minBuy;
     private BigDecimal minSell;
@@ -35,15 +38,6 @@ public final class ChestShopRestrictions extends JavaPlugin {
     private boolean maxShopsEnabled;
     private boolean blockTransactionsOverLimit;
     private boolean allowFreeShops;
-
-    private String msgMinBuy;
-    private String msgMinSell;
-    private String msgWholeNumbersOnly;
-    private String msgMaxShops;
-    private String msgCount;
-    private String msgTransactionBlocked;
-    private String msgOverLimitLogin;
-    private String msgLimits;
 
     @Override
     public void onEnable() {
@@ -54,6 +48,9 @@ public final class ChestShopRestrictions extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         setupEconomy();
+
+        // Initialize language system
+        lang = new Lang(this);
         loadSettings();
 
         // Initialize database
@@ -140,45 +137,8 @@ public final class ChestShopRestrictions extends JavaPlugin {
         blockTransactionsOverLimit = getConfig().getBoolean("block-transactions-over-limit", false);
         allowFreeShops = getConfig().getBoolean("allow-free-shops", true);
 
-        msgMinBuy = getConfig().getString(
-                "messages.minimum-prices.buy",
-                "<red>The minimum buy (B) price is <price> <currency>."
-        );
-
-        msgMinSell = getConfig().getString(
-                "messages.minimum-prices.sell",
-                "<red>The minimum sell (S) price is <price> <currency>."
-        );
-
-        msgWholeNumbersOnly = getConfig().getString(
-                "messages.whole-numbers-only",
-                "<red>The price must be a whole number."
-        );
-
-        msgMaxShops = getConfig().getString(
-                "messages.max-shops",
-                "<red>You can only create up to <max> shops."
-        );
-
-        msgCount = getConfig().getString(
-                "messages.count",
-                "<gold><player>'s shop count: <yellow><count>/<max>"
-        );
-
-        msgTransactionBlocked = getConfig().getString(
-                "messages.transaction-blocked",
-                "<red>This shop is currently disabled because the owner has too many shops."
-        );
-
-        msgOverLimitLogin = getConfig().getString(
-                "messages.over-limit-login",
-                "<red>You have <count> shops but are only allowed <max>. Your shops are disabled until you remove some."
-        );
-
-        msgLimits = getConfig().getString(
-                "messages.limits",
-                "<gold>ChestShopRestrictions Limits:\n<yellow>Min Buy (B) Price: <min_buy> <currency_buy>\n<yellow>Min Sell (S) Price: <min_sell> <currency_sell>\n<yellow>Whole Numbers Only: <whole_numbers>"
-        );
+        // Load language file
+        lang.load();
 
         getLogger().info("Min buy: " + minBuy + ", min sell: " + minSell +
                 ", whole numbers only: " + wholeNumbersOnly);
@@ -234,12 +194,14 @@ public final class ChestShopRestrictions extends JavaPlugin {
     public boolean isBlockTransactionsOverLimit() { return blockTransactionsOverLimit; }
     public boolean isAllowFreeShops() { return allowFreeShops; }
 
-    public String getMsgMinBuy() { return msgMinBuy; }
-    public String getMsgMinSell() { return msgMinSell; }
-    public String getMsgWholeNumbersOnly() { return msgWholeNumbersOnly; }
-    public String getMsgMaxShops() { return msgMaxShops; }
-    public String getMsgLimits() { return msgLimits; }
-    public String getMsgTransactionBlocked() { return msgTransactionBlocked; }
+    public Lang getLang() { return lang; }
+
+    public String getMsgMinBuy() { return lang.getMsgMinBuy(); }
+    public String getMsgMinSell() { return lang.getMsgMinSell(); }
+    public String getMsgWholeNumbersOnly() { return lang.getMsgWholeNumbersOnly(); }
+    public String getMsgMaxShops() { return lang.getMsgMaxShops(); }
+    public String getMsgLimits() { return lang.getMsgLimits(); }
+    public String getMsgTransactionBlocked() { return lang.getMsgTransactionBlocked(); }
 
     public ShopTracker getShopTracker() { return shopTracker; }
 
@@ -250,8 +212,9 @@ public final class ChestShopRestrictions extends JavaPlugin {
      * @param max   max allowed shops
      */
     public Component formatOverLimitLoginMessage(int count, int max) {
-        if (msgOverLimitLogin == null || msgOverLimitLogin.isEmpty()) return Component.empty();
-        String replaced = msgOverLimitLogin
+        String msg = lang.getMsgOverLimitLogin();
+        if (msg == null || msg.isEmpty()) return Component.empty();
+        String replaced = msg
                 .replace("<count>", String.valueOf(count))
                 .replace("<max>", String.valueOf(max));
         return MINI_MESSAGE.deserialize(replaced);
@@ -261,8 +224,9 @@ public final class ChestShopRestrictions extends JavaPlugin {
      * Formats the max-shops message, replacing {@code <max>} with the limit.
      */
     public Component formatMaxShopsMessage(int max) {
-        if (msgMaxShops == null || msgMaxShops.isEmpty()) return Component.empty();
-        String replaced = msgMaxShops.replace("<max>", String.valueOf(max));
+        String msg = lang.getMsgMaxShops();
+        if (msg == null || msg.isEmpty()) return Component.empty();
+        String replaced = msg.replace("<max>", String.valueOf(max));
         return MINI_MESSAGE.deserialize(replaced);
     }
 
@@ -274,8 +238,9 @@ public final class ChestShopRestrictions extends JavaPlugin {
      * @param max        the max shop limit (or "∞" if unlimited)
      */
     public Component formatCountMessage(String playerName, int count, String max) {
-        if (msgCount == null || msgCount.isEmpty()) return Component.empty();
-        String replaced = msgCount
+        String msg = lang.getMsgCount();
+        if (msg == null || msg.isEmpty()) return Component.empty();
+        String replaced = msg
                 .replace("<player>", playerName)
                 .replace("<count>", String.valueOf(count))
                 .replace("<max>", max);
@@ -288,8 +253,9 @@ public final class ChestShopRestrictions extends JavaPlugin {
      * and joining them with newline components.
      */
     public Component formatLimitsMessage() {
-        if (msgLimits == null || msgLimits.isEmpty()) return Component.empty();
-        String replaced = msgLimits.trim()
+        String msg = lang.getMsgLimits();
+        if (msg == null || msg.isEmpty()) return Component.empty();
+        String replaced = msg.trim()
                 .replace("<min_buy>", minBuy.toPlainString())
                 .replace("<min_sell>", minSell.toPlainString())
                 .replace("<currency_buy>", getCurrencyName(minBuy))
@@ -303,3 +269,4 @@ public final class ChestShopRestrictions extends JavaPlugin {
         return result;
     }
 }
+
